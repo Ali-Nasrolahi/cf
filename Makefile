@@ -1,6 +1,6 @@
 CXX=g++
-CXXFLAGS += -Wall -Werror -g3 -pthread -luuid
-srcs := $(shell find ! -path "./esp*/*" \( -name "*.cpp" -o -name "*.c" \))
+CXXFLAGS += -Wall -g3 -pthread -Iinc
+srcs := $(shell find \( -name "*.cpp" -o -name "*.c" \))
 
 .PHONY: all
 
@@ -10,9 +10,6 @@ all: $(srcs:%.cpp=%)
 clean:
 	rm -f *.o *.bin
 	find * -type f -executable -delete
-ifneq ($(IDF_PATH),)
-	cd esp_cf && idf.py fullclean && cd ..
-endif
 
 % : %.o ; @$(LINK.cpp) $(OUTPUT_OPTION) $^ $(LDLIBS)
 
@@ -23,18 +20,6 @@ py:
 
 asm:
 	nasm cf.asm -f bin -o cf.bin
-
-esp:
-	cd esp_cf && idf.py build && cd ..
-
-flash:
-	cd esp_cf && idf.py flash monitor && cd ..
-
-erase_flash:
-	cd esp_cf && idf.py erase_flash && cd ..
-
-menuconfig:
-	cd esp_cf && idf.py menuconfig && cd ..
 
 r_asm:
 	qemu-system-x86_64 -fda cf.bin
@@ -48,9 +33,7 @@ format:
 
 new: clean
 	cp tmpl cf.cpp
-	rm -rf esp_cf/*
-	cp -r esp_tmpl/* esp_cf/
-	sed -i "s/@date/@date $(shell date +%F)./" cf.cpp esp_cf/main/*.c esp_cf/include/*.h
+	sed -i "s/@date/@date $(shell date +%F)./" cf.cpp
 
 pre:
 	$(CXX) -E cf.cpp
@@ -62,21 +45,7 @@ else
 	cp cf.cpp saves/$(NAME).cpp
 endif
 
-save_esp:
-ifeq ($(NAME),)
-	cp -r esp_cf/ saves/esp_cf-$(shell date '+%Y%m%d')/
-else
-	rm -rf saves/$(NAME)/
-	cp -r esp_cf/ saves/$(NAME)/
-endif
-
 load: clean
 ifneq ($(NAME),)
 	cp saves/$(NAME).cpp cf.cpp
-endif
-
-load_esp: clean
-ifneq ($(NAME),)
-	rm -rf esp_cf/*
-	cp -r saves/$(NAME)/* esp_cf/
 endif
