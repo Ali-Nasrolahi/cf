@@ -1,1 +1,1 @@
-# Super simple dev environment for my different stuff :)
+# Super simple dev environment

@@ -32,8 +32,7 @@ format:
 		$(shell find . ! -path "./*/build/*" \( -name '*.h' -o -name '*.hpp' -o -name '*.tcc' -o -name '*.c' -o -name '*.cpp' \))
 
 new: clean
-	cp tmpl cf.cpp
-	sed -i "s/@date/@date $(shell date +%F)./" cf.cpp
+	sed -i "s/@date.*/@date $(shell date +%F)./g" inc/common.hpp cf.cpp
 
 pre:
 	$(CXX) -E cf.cpp
