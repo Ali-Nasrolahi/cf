@@ -22,7 +22,7 @@ asm:
 	nasm cf.asm -f bin -o cf.bin
 
 r_asm:
-	qemu-system-x86_64 -fda cf.bin
+	qemu-system-x86_64 -nographic -fda cf.bin
 
 fwrd_qemu:
 	socat tcp-l:5050,fork,reuseaddr tcp:127.0.0.1:5900
