@@ -1,31 +1,28 @@
+CC=gcc
 CXX=g++
+
+CFLAGS += -Wall -g3 -pthread -Iinc
 CXXFLAGS += -Wall -g3 -pthread -Iinc
+
 srcs := $(shell find \( -name "*.cpp" -o -name "*.c" \))
 
-.PHONY: all
-
-all: $(srcs:%.cpp=%)
-.PHONY: clean
+all: $(srcs:%.cpp=%) $(srcs:%.c=%)
 
 clean:
 	rm -f *.o *.bin
 	find * -type f -executable -delete
 
-% : %.o ; @$(LINK.cpp) $(OUTPUT_OPTION) $^ $(LDLIBS)
+%: %.o
+	$(CXX) $^ -o $@
 
 %.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c $^
-py:
-	python3.9 cf.py
+	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
-asm:
-	nasm cf.asm -f bin -o cf.bin
+%.o: %.c
+	$(CC) $(CFLAGS) -c $^ -o $@
 
-r_asm:
-	qemu-system-x86_64 -nographic -fda cf.bin
-
-fwrd_qemu:
-	socat tcp-l:5050,fork,reuseaddr tcp:127.0.0.1:5900
+pre:
+	$(CXX) -E cf.cpp
 
 format:
 	clang-format -i --style=file \
@@ -33,9 +30,6 @@ format:
 
 new: clean
 	sed -i "s/@date.*/@date $(shell date +%F)./g" inc/common.hpp cf.cpp
-
-pre:
-	$(CXX) -E cf.cpp
 
 save:
 ifeq ($(NAME),)
