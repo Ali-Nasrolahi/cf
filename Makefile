@@ -6,11 +6,18 @@ CXXFLAGS += -Wall -g3 -pthread -Iinc
 
 srcs := $(shell find \( -name "*.cpp" -o -name "*.c" \))
 
-all: $(srcs:%.cpp=%) $(srcs:%.c=%)
+#all: $(srcs:%.cpp=%) $(srcs:%.c=%)
+
+all: cmake_build
+
+cmake_build:
+	cmake -Bbuild
+	cmake --build build -j 10
 
 clean:
 	rm -f *.o *.bin
 	find * -type f -executable -delete
+	cmake --build build --target clean
 
 %: %.o
 	$(CXX) $^ -o $@
