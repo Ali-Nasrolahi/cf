@@ -33,7 +33,7 @@ pre:
 
 format:
 	clang-format -i --style=file \
-		$(shell find . ! -path "./*/build/*" \( -name '*.h' -o -name '*.hpp' -o -name '*.tcc' -o -name '*.c' -o -name '*.cpp' \))
+		$(shell find . ! -path "./build/*" \( -name '*.h' -o -name '*.hpp' -o -name '*.tcc' -o -name '*.c' -o -name '*.cpp' \))
 
 new: clean
 	sed -i "s/@date.*/@date $(shell date +%F)./g" inc/common.hpp cf.cpp
